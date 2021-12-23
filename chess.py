@@ -35,6 +35,7 @@ def main():
                         move = Move(player_clicks[0],player_clicks[1],board.board)
                         board.get_all_moves()
                         for valid_move in board.valid_moves:
+                            print(valid_move)
                             if valid_move == move:
                                 board.make_move(move)
                                 moveMade = True

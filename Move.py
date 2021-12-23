@@ -25,8 +25,9 @@ class Move():
         return False
 
     def __str__(self):
-        moveID = f"{self.moveID} \n"
-        return moveID
+        #moveID = f"{self.moveID} \n"
+        #return moveID
+        return self.getChessNotation()
 
     def getChessNotation(self):
         return self.getRankFile(self.startRow, self.startCol) + self.getRankFile(self.endRow, self.endCol)

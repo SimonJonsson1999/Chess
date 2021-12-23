@@ -4,8 +4,8 @@ import pygame as p
 class Board():
 
     def __init__(self, SQ_SIZE, DIMENSION):
-
-
+        self.black_check = False
+        self.white_check = False
         self.white_to_move = True
         self.moveLog = []
         self.colors = [p.Color("white"),p.Color("dark gray")]
@@ -53,6 +53,11 @@ class Board():
             self.board[move.startRow][move.startCol] = Empty("", self.PIECE_IMAGES["transparent"])
             self.board[move.endRow][move.endCol] = move.pieceMoved
             self.moveLog.append(move)
+            if isinstance(move.pieceMoved, Pawn):
+                move.pieceMoved.have_moved = True
+                if move.endRow == 0 or move.endRow == 7:
+                    ## promotion of pawn is handled here, right now it automaticlly promotes to queen
+                    self.board[move.endRow][move.endCol] = Queen(f"{move.pieceMoved.color}", self.PIECE_IMAGES[f"{move.pieceMoved.color[0]}Q"])
             self.white_to_move = not self.white_to_move # swap player turn
 
 
@@ -69,4 +74,8 @@ class Board():
         for row in range(self.DIMENSION):
             for column in range(self.DIMENSION):
                 self.board[row][column].get_moves((row, column), self.board, self.valid_moves, self.white_to_move)
+                
+    def check_if_check(self):
         pass
+
+
