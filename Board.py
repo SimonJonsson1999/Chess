@@ -67,15 +67,40 @@ class Board():
 
 
     def get_valid_moves(self):
-        pass
-
+        index = 0
+        for move in self.valid_moves:
+            board_copy = self
+            board_copy.make_move(move)
+            for row in range(board_copy.DIMENSION):
+                for column in range(board_copy.DIMENSION):
+                    board_copy.board[row][column].get_moves( (row, column), board_copy.board, board_copy.valid_moves, board_copy.white_to_move)
+            for move2 in board_copy.valid_moves:
+                if isinstance( move2.pieceCaptured, King):
+                    self.valid_moves.pop(index)
+            #print(index)
+            index += 1
     def get_all_moves(self):
         self.valid_moves = []
         for row in range(self.DIMENSION):
             for column in range(self.DIMENSION):
                 self.board[row][column].get_moves((row, column), self.board, self.valid_moves, self.white_to_move)
-                
+
     def check_if_check(self):
         pass
 
+
+    def __copy__(self, other):
+        if isinstance(other, Board):
+            other.board = self.board
+            self.black_check = False
+            self.white_check = False
+            other.white_to_move =self.white_to_move
+            other.moveLog = self.moveLog
+            other.SQ_SIZE = self.SQ_SIZE
+            other.DIMENSION = self.DIMENSION
+            other_valid_moves = self.valid_moves
+            print("copy")
+            return True
+        else:
+            return False
 

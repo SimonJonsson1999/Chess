@@ -52,7 +52,7 @@ class Pawn(Piece):
                         valid_moves.append( Move( position, (row - 1, col - 1), board ) )
 
             else:
-                if row != 0:
+                if row > 0:
                     if self.check_if_empty( row - 1, col, board):
                         valid_moves.append( Move( position, (row - 1, col), board ) )
                     if col == 0:
@@ -86,7 +86,7 @@ class Pawn(Piece):
                             valid_moves.append( Move( position, (row + 1, col - 1), board ) )
 
                 else:
-                    if row != 7:
+                    if row < 7:
                         if self.check_if_empty( row + 1, col, board):
                             valid_moves.append( Move( position, (row + 1, col), board ) )
                         if col == 0:
@@ -432,7 +432,7 @@ class King(Piece):
                     valid_moves.append( Move( position, ( row - 1, col - 1), board ) )
 
             # King moves up and right 
-            if col + 1 != -1 and row - 1 != 8:
+            if col + 1 != 8 and row - 1 != -1:
                 if self.check_if_empty( row - 1 , col + 1, board):
                     valid_moves.append( Move( position, ( row - 1, col + 1), board ) )
                 elif self.opposite_color( row - 1, col + 1, board):

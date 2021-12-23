@@ -34,6 +34,8 @@ def main():
                     if len(player_clicks) == 2: # after second clicks
                         move = Move(player_clicks[0],player_clicks[1],board.board)
                         board.get_all_moves()
+                        #board.get_valid_moves()
+
                         for valid_move in board.valid_moves:
                             if valid_move == move:
                                 board.make_move(move)
@@ -42,8 +44,10 @@ def main():
                         if moveMade:
                             board.get_all_moves()
                             moveMade = False
-                        sq_selected = () # reset user clicks
-                        player_clicks = []
+                            sq_selected = () # reset user clicks
+                            player_clicks = []
+                        else:
+                            player_clicks = [sq_selected]
 
             clock.tick(MAX_FPS)
             if sq_selected:
