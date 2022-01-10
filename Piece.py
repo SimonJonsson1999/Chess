@@ -171,12 +171,12 @@ class Knight(Piece):
                 if col + 1 != 8:
                     if self.check_if_empty( row + 2, col + 1, board):
                         valid_moves.append( Move( position, ( row + 2, col + 1), board) )
-                    if self.opposite_color( row + 2, col + 1, board):
+                    elif self.opposite_color( row + 2, col + 1, board):
                         valid_moves.append( Move( position, ( row + 2, col + 1), board) )
                 if col - 1 != -1:
                     if self.check_if_empty( row + 2, col - 1, board):
                         valid_moves.append( Move( position, ( row + 2, col - 1), board) )
-                    if self.opposite_color( row + 2, col - 1, board):
+                    elif self.opposite_color( row + 2, col - 1, board):
                         valid_moves.append( Move( position, ( row + 2, col - 1), board) )    
 
             # Knight move 2 up and 1 left or right
@@ -184,12 +184,12 @@ class Knight(Piece):
                 if col + 1 != 8:
                     if self.check_if_empty( row - 2, col + 1, board):
                         valid_moves.append( Move( position, ( row - 2, col + 1), board) )
-                    if self.opposite_color( row - 2, col + 1, board):
+                    elif self.opposite_color( row - 2, col + 1, board):
                         valid_moves.append( Move( position, ( row - 2, col + 1), board) )
                 if col - 1 != -1:
                     if self.check_if_empty( row - 2, col - 1, board):
                         valid_moves.append( Move( position, ( row - 2, col - 1), board) )
-                    if self.opposite_color( row - 2, col - 1, board):
+                    elif self.opposite_color( row - 2, col - 1, board):
                         valid_moves.append( Move( position, ( row - 2, col - 1), board) ) 
 
             # Knight move 2 left and 1 up or down
@@ -197,12 +197,12 @@ class Knight(Piece):
                 if row + 1 != 8:
                     if self.check_if_empty( row + 1, col - 2, board):
                         valid_moves.append( Move( position, ( row + 1, col - 2), board) )
-                    if self.opposite_color( row + 1, col - 2, board):
+                    elif self.opposite_color( row + 1, col - 2, board):
                         valid_moves.append( Move( position, ( row + 1, col - 2), board) )
                 if row - 1 != -1:
                     if self.check_if_empty( row - 1, col - 2, board):
                         valid_moves.append( Move( position, ( row - 1, col - 2), board) )
-                    if self.opposite_color( row - 1, col - 2, board):
+                    elif self.opposite_color( row - 1, col - 2, board):
                         valid_moves.append( Move( position, ( row - 1, col - 2), board) )  
 
             # Knight move 2 left and 1 up or down
@@ -210,12 +210,12 @@ class Knight(Piece):
                 if row + 1 != 8:
                     if self.check_if_empty( row + 1, col + 2, board):
                         valid_moves.append( Move( position, ( row + 1, col + 2), board) )
-                    if self.opposite_color( row + 1, col + 2, board):
+                    elif self.opposite_color( row + 1, col + 2, board):
                         valid_moves.append( Move( position, ( row + 1, col + 2), board) )
                 if row - 1 != -1:
                     if self.check_if_empty( row - 1, col + 2, board):
                         valid_moves.append( Move( position, ( row - 1, col + 2), board) )
-                    if self.opposite_color( row - 1, col + 2, board):
+                    elif self.opposite_color( row - 1, col + 2, board):
                         valid_moves.append( Move( position, ( row - 1, col + 2), board) ) 
 
 
@@ -386,28 +386,28 @@ class King(Piece):
             if row + 1 != 8:
                 if self.check_if_empty( row + 1, col, board):
                  valid_moves.append( Move( position, ( row + 1, col), board ) )
-                if self.opposite_color( row + 1, col, board):
+                elif self.opposite_color( row + 1, col, board):
                   valid_moves.append( Move( position, ( row + 1, col), board ) ) 
 
             # King moves down
             if row - 1 != -1:
                 if self.check_if_empty( row - 1, col, board):
                  valid_moves.append( Move( position, ( row - 1, col), board ) )
-                if self.opposite_color( row - 1, col, board):
+                elif self.opposite_color( row - 1, col, board):
                   valid_moves.append( Move( position, ( row - 1, col), board ) )  
 
             # King moves right
             if col + 1 != 8:
                 if self.check_if_empty( row, col + 1, board):
                  valid_moves.append( Move( position, ( row, col + 1), board ) )
-                if self.opposite_color( row, col + 1, board):
+                elif self.opposite_color( row, col + 1, board):
                   valid_moves.append( Move( position, ( row, col + 1), board ) ) 
 
             # King moves right
             if col - 1 != 8:
                 if self.check_if_empty( row, col - 1, board):
                  valid_moves.append( Move( position, ( row, col - 1), board ) )
-                if self.opposite_color( row, col - 1, board):
+                elif self.opposite_color( row, col - 1, board):
                   valid_moves.append( Move( position, ( row, col - 1), board ) )
 
             # King moves down and right 

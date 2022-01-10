@@ -33,12 +33,22 @@ def main():
                         player_clicks.append(sq_selected) # append for both and second clicks
                     if len(player_clicks) == 2: # after second clicks
                         move = Move(player_clicks[0],player_clicks[1],board.board)
-                        board.get_all_moves()
-                        #board.get_valid_moves()
-
-                        for valid_move in board.valid_moves:
+                        moves = board.get_all_moves()
+                        print(f"Number of moves: {len(moves)}")
+                        for move1 in moves:
+                            print(f" Move: {move1.getChessNotation()}")
+                            pass
+                        valid_moves = board.get_valid_moves( moves )
+                        #valid_moves = moves
+                        for legal_move in valid_moves:
+                            print(f" Legal_move: {legal_move.getChessNotation()}")
+                            pass
+                        print(f"Number of valid_moves: {len(valid_moves)}")
+                        
+                        for valid_move in valid_moves:
                             if valid_move == move:
                                 board.make_move(move)
+                                board.movelog.append(move)
                                 moveMade = True
                                 break
                         if moveMade:
@@ -48,7 +58,9 @@ def main():
                             player_clicks = []
                         else:
                             player_clicks = [sq_selected]
-
+                elif event.type == p.KEYDOWN:
+                    if event.key == p.K_z:
+                        board.undo_move()
             clock.tick(MAX_FPS)
             if sq_selected:
                 board.highlight(sq_selected)

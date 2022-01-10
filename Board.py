@@ -7,15 +7,13 @@ class Board():
         self.black_check = False
         self.white_check = False
         self.white_to_move = True
-        self.moveLog = []
+        self.movelog = []
         self.colors = [p.Color("white"),p.Color("dark gray")]
         self.SQ_SIZE = SQ_SIZE
         self.DIMENSION = DIMENSION
         self.highligt_color = (255,255,84)
         self.highlight_sq = ()
         self.PIECE_IMAGES = {}
-        self.move_log = []
-        self.valid_moves = []
         self.load_images()
         self.board = [
                     [Rook("black", self.PIECE_IMAGES["bR"]), Knight("black", self.PIECE_IMAGES["bN"]), Bishop("black", self.PIECE_IMAGES["bB"]), Queen("black", self.PIECE_IMAGES["bQ"]), King("black",self.PIECE_IMAGES["bK"]), Bishop("black", self.PIECE_IMAGES["bB"]), Knight("black", self.PIECE_IMAGES["bN"]), Rook("black", self.PIECE_IMAGES["bR"])],
@@ -52,7 +50,7 @@ class Board():
         if not(isinstance(move.pieceMoved, Empty)):
             self.board[move.startRow][move.startCol] = Empty("", self.PIECE_IMAGES["transparent"])
             self.board[move.endRow][move.endCol] = move.pieceMoved
-            self.moveLog.append(move)
+            self.movelog.append(move)
             if isinstance(move.pieceMoved, Pawn):
                 move.pieceMoved.have_moved = True
                 if move.endRow == 0 or move.endRow == 7:
@@ -66,24 +64,31 @@ class Board():
         self.highlight_sq = sq_selected
 
 
-    def get_valid_moves(self):
-        index = 0
-        for move in self.valid_moves:
-            board_copy = self
-            board_copy.make_move(move)
-            for row in range(board_copy.DIMENSION):
-                for column in range(board_copy.DIMENSION):
-                    board_copy.board[row][column].get_moves( (row, column), board_copy.board, board_copy.valid_moves, board_copy.white_to_move)
-            for move2 in board_copy.valid_moves:
+    def get_valid_moves(self, moves):
+        ### Funkar inte helt, FIXA
+        valid_moves = []
+        for move in moves:
+            self.make_move(move)
+            moves2 = self.get_all_moves()
+            king_captured = False
+            for move2 in moves2:
                 if isinstance( move2.pieceCaptured, King):
-                    self.valid_moves.pop(index)
-            #print(index)
-            index += 1
+                    if (self.white_to_move and move2.pieceCaptured.color == "black") or (not self.white_to_move and move2.pieceCaptured.color == "white"):
+                        king_captured = True
+                        
+            if not king_captured:
+                valid_moves.append(move)
+            self.undo_move()
+            
+        return valid_moves
+
     def get_all_moves(self):
-        self.valid_moves = []
+        valid_moves = []
         for row in range(self.DIMENSION):
             for column in range(self.DIMENSION):
-                self.board[row][column].get_moves((row, column), self.board, self.valid_moves, self.white_to_move)
+                self.board[row][column].get_moves((row, column), self.board, valid_moves, self.white_to_move)
+        return valid_moves
+
 
     def check_if_check(self):
         pass
@@ -94,7 +99,7 @@ class Board():
             other.board = self.board
             self.black_check = False
             self.white_check = False
-            other.white_to_move =self.white_to_move
+            other.white_to_move = self.white_to_move
             other.moveLog = self.moveLog
             other.SQ_SIZE = self.SQ_SIZE
             other.DIMENSION = self.DIMENSION
@@ -103,4 +108,12 @@ class Board():
             return True
         else:
             return False
+
+    def undo_move(self):
+        if self.movelog:
+            last_move = self.movelog.pop()
+            self.board[last_move.startRow][last_move.startCol] = last_move.pieceMoved
+            self.board[last_move.endRow][last_move.endCol] = last_move.pieceCaptured
+            self.white_to_move = not(self.white_to_move)
+
 
