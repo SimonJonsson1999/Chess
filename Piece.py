@@ -27,7 +27,7 @@ class Pawn(Piece):
     def __init__(self, color, image):
         Piece.__init__(self, color, image)
         self.piece = "P"
-        self.have_moved = False
+        self.have_moved = 0
 
     # position is a tuple, board is a instance of Board, valid_moves is a list with moves and white_turn is a bool
     def get_moves(self, position, board, valid_moves, white_turn):

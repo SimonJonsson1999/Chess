@@ -52,7 +52,7 @@ class Board():
             self.board[move.endRow][move.endCol] = move.pieceMoved
             self.movelog.append(move)
             if isinstance(move.pieceMoved, Pawn):
-                move.pieceMoved.have_moved = True
+                move.pieceMoved.have_moved += 1
                 if move.endRow == 0 or move.endRow == 7:
                     ## promotion of pawn is handled here, right now it automaticlly promotes to queen
                     self.board[move.endRow][move.endCol] = Queen(f"{move.pieceMoved.color}", self.PIECE_IMAGES[f"{move.pieceMoved.color[0]}Q"])
@@ -65,15 +65,14 @@ class Board():
 
 
     def get_valid_moves(self, moves):
-        ### Funkar inte helt, FIXA
         valid_moves = []
         for move in moves:
             self.make_move(move)
-            moves2 = self.get_all_moves()
+            second_moves = self.get_all_moves()
             king_captured = False
-            for move2 in moves2:
-                if isinstance( move2.pieceCaptured, King):
-                    if (self.white_to_move and move2.pieceCaptured.color == "black") or (not self.white_to_move and move2.pieceCaptured.color == "white"):
+            for second_move in second_moves:
+                if isinstance( second_move.pieceCaptured, King):
+                    if (self.white_to_move and second_move.pieceCaptured.color == "black") or (not self.white_to_move and second_move.pieceCaptured.color == "white"):
                         king_captured = True
                         
             if not king_captured:
@@ -112,8 +111,11 @@ class Board():
     def undo_move(self):
         if self.movelog:
             last_move = self.movelog.pop()
+            if isinstance ( last_move.pieceMoved, Pawn):
+                last_move.pieceMoved.have_moved -= 1
             self.board[last_move.startRow][last_move.startCol] = last_move.pieceMoved
             self.board[last_move.endRow][last_move.endCol] = last_move.pieceCaptured
             self.white_to_move = not(self.white_to_move)
+
 
 
