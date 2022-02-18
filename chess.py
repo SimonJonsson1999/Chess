@@ -2,7 +2,7 @@ import pygame as p
 from Piece import Piece
 from Board import Board
 from Move import Move
-WIDTH = HEIGHT = 900
+WIDTH = HEIGHT = 780
 DIMENSION = 8 #8 by 8 board
 SQ_SIZE = HEIGHT // DIMENSION
 MAX_FPS = 15
@@ -11,7 +11,6 @@ def main():
     clock = p.time.Clock() #create a clock
 
     board = Board(SQ_SIZE, DIMENSION)
-
     screen.fill(p.Color("Black"))
     player_clicks = []
     sq_selected = ()
@@ -34,16 +33,7 @@ def main():
                     if len(player_clicks) == 2: # after second clicks
                         move = Move(player_clicks[0],player_clicks[1],board.board)
                         moves = board.get_all_moves()
-                        for move1 in moves:
-                            print(f" Move: {move1.getChessNotation()}")
-                        print(f"Number of moves: {len(moves)}")
-                        valid_moves = board.get_valid_moves( moves )
-                        #valid_moves = moves
-                        for legal_move in valid_moves:
-                            print(f" Legal_move: {legal_move.getChessNotation()}")
-                        #    pass
-                        print(f"Number of valid_moves: {len(valid_moves)}")
-                        
+                        valid_moves = board.get_valid_moves( moves )                      
                         for valid_move in valid_moves:
                             if valid_move == move:
                                 board.make_move(move)

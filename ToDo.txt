@@ -1,0 +1,13 @@
+Make it follow chess rules
+- Anpassant
+- Choose what piece u wanna promote to
+- Checkmate
+- Castling
+
+Implement AI as black
+- 
+
+
+Extra functions for the game screen
+- Add a timer
+- Add letters and numbers to the board for easier visulasation

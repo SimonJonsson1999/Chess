@@ -50,13 +50,25 @@ class Board():
         if not(isinstance(move.pieceMoved, Empty)):
             self.board[move.startRow][move.startCol] = Empty("", self.PIECE_IMAGES["transparent"])
             self.board[move.endRow][move.endCol] = move.pieceMoved
+            #Check if anpassant move
+            if move.apassant:
+                if move.pieceMoved.color == "white":
+                    self.board[move.endRow + 1][move.endCol] = Empty("", self.PIECE_IMAGES["transparent"])
+                elif move.pieceMoved.color == "black":
+                    self.board[move.endRow - 1][move.endCol] = Empty("", self.PIECE_IMAGES["transparent"])
+
             self.movelog.append(move)
+
+            #Make sure number of moves pawn have done is increased by 1
             if isinstance(move.pieceMoved, Pawn):
                 move.pieceMoved.have_moved += 1
+
                 if move.endRow == 0 or move.endRow == 7:
                     ## promotion of pawn is handled here, right now it automaticlly promotes to queen
                     self.board[move.endRow][move.endCol] = Queen(f"{move.pieceMoved.color}", self.PIECE_IMAGES[f"{move.pieceMoved.color[0]}Q"])
-            self.white_to_move = not self.white_to_move # swap player turn
+
+            # swap player turn
+            self.white_to_move = not self.white_to_move 
 
 
 
@@ -65,19 +77,36 @@ class Board():
 
 
     def get_valid_moves(self, moves):
+        ## Lägg in apassant (funkar inte riktigt än)
         valid_moves = []
         for move in moves:
-            self.make_move(move)
-            second_moves = self.get_all_moves()
-            king_captured = False
-            for second_move in second_moves:
-                if isinstance( second_move.pieceCaptured, King):
-                    if (self.white_to_move and second_move.pieceCaptured.color == "black") or (not self.white_to_move and second_move.pieceCaptured.color == "white"):
-                        king_captured = True
-                        
-            if not king_captured:
-                valid_moves.append(move)
-            self.undo_move()
+            make_move = True
+            
+            if move.apassant:
+                last_move = self.movelog[-1]
+                if move.pieceMoved.color == "white":
+                    if last_move.endRow == move.endRow + 1 and last_move.endCol == move.endCol:
+                        make_move = True
+                    else:
+                        make_move = False
+                elif move.pieceMoved.color == "black":
+                    if last_move.endRow == move.endRow - 1 and last_move.endCol == move.endCol:
+                        make_move = True
+                    else:
+                        make_move = False
+               
+            if make_move:
+                self.make_move(move)
+                second_moves = self.get_all_moves()
+                king_captured = False
+                for second_move in second_moves:
+                    if isinstance( second_move.pieceCaptured, King):
+                        if (self.white_to_move and second_move.pieceCaptured.color == "black") or (not self.white_to_move and second_move.pieceCaptured.color == "white"):
+                            king_captured = True
+                            
+                if not king_captured:
+                    valid_moves.append(move)
+                self.undo_move()
             
         return valid_moves
 
@@ -103,7 +132,6 @@ class Board():
             other.SQ_SIZE = self.SQ_SIZE
             other.DIMENSION = self.DIMENSION
             other_valid_moves = self.valid_moves
-            print("copy")
             return True
         else:
             return False
@@ -111,8 +139,16 @@ class Board():
     def undo_move(self):
         if self.movelog:
             last_move = self.movelog.pop()
+            #make sures number of moves a pawn have done decrease by 1
             if isinstance ( last_move.pieceMoved, Pawn):
                 last_move.pieceMoved.have_moved -= 1
+
+            if last_move.apassant:
+                if last_move.pieceMoved.color == "white":
+                    self.board[last_move.endRow + 1][last_move.endCol] = Pawn("black", self.PIECE_IMAGES["bP"])
+                elif last_move.pieceMoved.color == "black":
+                    self.board[last_move.endRow - 1][last_move.endCol] = Pawn("white", self.PIECE_IMAGES["wP"]) 
+
             self.board[last_move.startRow][last_move.startCol] = last_move.pieceMoved
             self.board[last_move.endRow][last_move.endCol] = last_move.pieceCaptured
             self.white_to_move = not(self.white_to_move)

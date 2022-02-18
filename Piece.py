@@ -66,6 +66,12 @@ class Pawn(Piece):
                             valid_moves.append( Move( position, (row - 1, col + 1), board ) )
                         if not( self.check_if_empty(row - 1, col - 1, board) ) and self.opposite_color( row - 1, col - 1, board):
                             valid_moves.append( Move( position, (row - 1, col - 1), board ) )
+                    if row == 3:
+                        if isinstance(board[row][col+1], Pawn) and self.opposite_color( row, col + 1, board):
+                            valid_moves.append( Move( position, (row - 1, col + 1), board, True ) )
+                        elif isinstance(board[row][col-1], Pawn) and self.opposite_color( row, col - 1, board):
+                            valid_moves.append( Move( position, (row - 1, col - 1), board, True ) )
+
 
         elif self.color == "black" and not(white_turn):
                 # First move for the pawn
@@ -100,7 +106,11 @@ class Pawn(Piece):
                                 valid_moves.append( Move( position, (row + 1, col + 1), board ) )
                             if not( self.check_if_empty(row + 1, col - 1, board) ) and self.opposite_color( row + 1, col - 1, board):
                                 valid_moves.append( Move( position, (row + 1, col - 1), board ) )
-
+                    if row == 4:
+                        if isinstance(board[row][col+1], Pawn) and self.opposite_color( row, col + 1, board):
+                            valid_moves.append( Move( position, (row + 1, col + 1), board, True ) )
+                        elif isinstance(board[row][col-1], Pawn) and self.opposite_color( row, col - 1, board):
+                            valid_moves.append( Move( position, (row + 1, col - 1), board, True ) )
 class Rook(Piece):
     def __init__(self, color, image):
         Piece.__init__(self, color, image)
