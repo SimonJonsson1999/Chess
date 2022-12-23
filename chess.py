@@ -2,7 +2,7 @@ import pygame as p
 from Piece import Piece
 from Board import Board
 from Move import Move
-WIDTH = HEIGHT = 780
+WIDTH = HEIGHT = 640
 DIMENSION = 8 #8 by 8 board
 SQ_SIZE = HEIGHT // DIMENSION
 MAX_FPS = 15
@@ -53,7 +53,9 @@ def main():
             clock.tick(MAX_FPS)
             if sq_selected:
                 board.highlight(sq_selected)
+                board.highlight_move(sq_selected)
             board.draw(screen)
+            board.draw_moves(screen)
             p.display.flip()
 if __name__ == "__main__":
     main()

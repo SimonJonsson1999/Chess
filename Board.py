@@ -12,7 +12,9 @@ class Board():
         self.SQ_SIZE = SQ_SIZE
         self.DIMENSION = DIMENSION
         self.highligt_color = (255,255,84)
+        self.move_highligt_color = (100,100,50)
         self.highlight_sq = ()
+        self.highlight_moves = []
         self.PIECE_IMAGES = {}
         self.load_images()
         self.board = [
@@ -40,6 +42,13 @@ class Board():
                 if piece:
                     screen.blit(piece.image, p.Rect(column*self.SQ_SIZE, row*self.SQ_SIZE, self.SQ_SIZE, self.SQ_SIZE))
 
+
+
+    def draw_moves(self,screen):
+        for square in self.highlight_moves:
+            p.draw.circle(screen, self.move_highligt_color, (square[1]*self.SQ_SIZE + self.SQ_SIZE/2, square[0]*self.SQ_SIZE + self.SQ_SIZE/2), self.SQ_SIZE/2, 3)
+
+        self.highlight_moves = []
 
     def load_images(self):
         pieces = ["bR","bN","bB","bQ","bK","bB","bN","bR","bP","wR","wN","wB","wQ","wK","wB","wN","wR","wP","transparent"]
@@ -75,6 +84,14 @@ class Board():
     def highlight(self, sq_selected):
         self.highlight_sq = sq_selected
 
+    def highlight_move(self, sq_selected):
+        moves = self.get_all_moves()
+        valid_moves = self.get_valid_moves(moves)
+        for move in valid_moves:
+            if move.startRow == sq_selected[0] and move.startCol == sq_selected[1]:
+                self.highlight_moves.append((move.endRow, move.endCol))
+
+         
 
     def get_valid_moves(self, moves):
         ## Lägg in apassant (funkar inte riktigt än)
@@ -131,7 +148,7 @@ class Board():
             other.moveLog = self.moveLog
             other.SQ_SIZE = self.SQ_SIZE
             other.DIMENSION = self.DIMENSION
-            other_valid_moves = self.valid_moves
+            other.valid_moves = self.valid_moves
             return True
         else:
             return False
@@ -145,13 +162,14 @@ class Board():
 
             if last_move.apassant:
                 if last_move.pieceMoved.color == "white":
-                    self.board[last_move.endRow + 1][last_move.endCol] = Pawn("black", self.PIECE_IMAGES["bP"])
+                    self.board[last_move.endRow + 1][last_move.endCol] = last_move.pieceCaptured
                 elif last_move.pieceMoved.color == "black":
-                    self.board[last_move.endRow - 1][last_move.endCol] = Pawn("white", self.PIECE_IMAGES["wP"]) 
-
+                    self.board[last_move.endRow - 1][last_move.endCol] = last_move.pieceCaptured 
+            else:
+                
+                self.board[last_move.endRow][last_move.endCol] = last_move.pieceCaptured
+                  
             self.board[last_move.startRow][last_move.startCol] = last_move.pieceMoved
-            self.board[last_move.endRow][last_move.endCol] = last_move.pieceCaptured
             self.white_to_move = not(self.white_to_move)
-
 
 
