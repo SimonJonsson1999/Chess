@@ -55,7 +55,7 @@ class ChessEngine():
             elif event.type == p.MOUSEBUTTONDOWN:
                 self.handle_mouse_click(moves, valid_moves)
             elif event.type == p.KEYDOWN:
-                self.handle_keypress()
+                self.handle_keypress(event)
 
     def handle_mouse_click(self, moves, valid_moves):
         """Handles mouse click events to select and move pieces."""
@@ -109,9 +109,9 @@ class ChessEngine():
         self.sq_selected = (row, col)
         self.player_clicks.append(self.sq_selected)
 
-    def handle_keypress(self):
+    def handle_keypress(self, event):
         """Handles key press events (e.g., undo move)."""
-        if p.key == p.K_z:
+        if event.key == p.K_z:
             self.board.undo_move()
 
     def update_highlighting(self):

@@ -69,6 +69,19 @@ class Board():
     def make_move(self, move):
         self.board[move.startRow][move.startCol] = Empty("", self.PIECE_IMAGES["transparent"])
         self.board[move.endRow][move.endCol] = move.pieceMoved
+        if move.castle:
+            if move.endCol == 6:  # Kingside
+                rook_start_col = 7
+                rook_end_col = 5
+            elif move.endCol == 2:  # Queenside
+                rook_start_col = 0
+                rook_end_col = 3
+
+            # Move the rook
+            rook = self.board[move.startRow][rook_start_col]
+            self.board[move.startRow][rook_start_col] = Empty("", self.PIECE_IMAGES["transparent"])
+            self.board[move.startRow][rook_end_col] = rook
+            rook.have_moved += 1
 
         # Check if it's an en passant move
         if move.apassant:
@@ -122,7 +135,38 @@ class Board():
                         make_move = True
                     else:
                         make_move = False
-               
+            
+            # Handle castling logic
+            if isinstance(move.pieceMoved, King) and move.pieceMoved.color == "white":
+                # Check for Kingside Castling (White)
+                if move.endCol == 6:  # kingside castling
+                    if not self.is_square_under_attack(move.startRow, 4) and not self.is_square_under_attack(move.startRow, 5):
+                        make_move = True
+                    else:
+                        make_move = False
+            
+                # Check for Queenside Castling (White)
+                elif move.endCol == 2:  # queenside castling
+                    if not self.is_square_under_attack(move.startRow, 4) and not self.is_square_under_attack(move.startRow, 3):
+                        make_move = True
+                    else:
+                        make_move = False
+
+        
+            if isinstance(move.pieceMoved, King) and move.pieceMoved.color == "black" and not move.pieceMoved.have_moved:
+                if move.endCol == 6:  # kingside castling
+                    if not self.is_square_under_attack(move.startRow, 4) and not self.is_square_under_attack(move.startRow, 5):
+                        make_move = True
+                    else:
+                        make_move = False
+            
+                # Check for Queenside Castling (Black)
+                elif move.endCol == 2:  # queenside castling
+                    if not self.is_square_under_attack(move.startRow, 4) and not self.is_square_under_attack(move.startRow, 3):
+                        make_move = True
+                    else:
+                        make_move = False
+
             if make_move:
                 self.make_move(move)
                 second_moves = self.get_all_moves()
@@ -172,10 +216,39 @@ class Board():
                 elif last_move.pieceMoved.color == "black":
                     self.board[last_move.endRow - 1][last_move.endCol] = last_move.pieceCaptured
                     self.board[last_move.endRow ][last_move.endCol] = Empty("", self.PIECE_IMAGES["transparent"])
+
+            elif last_move.castle:
+                if last_move.endCol == 6:  # Kingside castling
+                    rook_start_col = 7
+                    rook_end_col = 5
+                elif last_move.endCol == 2:  # Queenside castling
+                    rook_start_col = 0
+                    rook_end_col = 3
+            
+                rook = self.board[last_move.startRow][rook_end_col]
+                self.board[last_move.startRow][rook_start_col] = rook
+                self.board[last_move.startRow][rook_end_col] = Empty("", self.PIECE_IMAGES["transparent"])
+                self.board[last_move.endRow][last_move.endCol] = Empty("", self.PIECE_IMAGES["transparent"])
+                rook.have_moved = False
             else:
                 self.board[last_move.endRow][last_move.endCol] = last_move.pieceCaptured
                   
             self.board[last_move.startRow][last_move.startCol] = last_move.pieceMoved
             self.white_to_move = not(self.white_to_move)
+
+    def is_square_under_attack(self, row, col):
+        # Check if the square is under attack by any opponent piece
+        
+        opponent_color = "black" if self.white_to_move else "white"
+        for r in range(self.DIMENSION):
+            for c in range(self.DIMENSION):
+                piece = self.board[r][c]
+                if piece.color == opponent_color:
+                    moves = []
+                    piece.get_moves((r, c), self.board, moves, self.white_to_move)
+                    for move in moves:
+                        if move.endRow == row and move.endCol == col:
+                            return True
+        return False
 
 

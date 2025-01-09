@@ -11,7 +11,7 @@ class Move():
                    "e" : 4, "f" : 5, "g" : 6, "h" : 7,}
     colsToFiles = {v: k for k, v in filesToCols.items()}
 
-    def __init__(self, startSq, endSq, board, pieceCaptured=None, apassant = False):
+    def __init__(self, startSq, endSq, board, pieceCaptured=None, apassant = False, castle = False):
         self.startRow = startSq[0]
         self.startCol = startSq[1]
         self.endRow = endSq[0]
@@ -20,6 +20,7 @@ class Move():
         self.pieceCaptured = pieceCaptured
         self.moveID = self.startRow * 1000 + self.startCol * 100 + self.endRow * 10 + self.endCol
         self.apassant = apassant # True or False
+        self.castle = castle
 
     def __eq__(self,other):
         if isinstance(other,Move):

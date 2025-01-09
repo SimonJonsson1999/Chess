@@ -18,7 +18,7 @@ def main():
     clock = p.time.Clock() #create a clock
     chess_engine = ChessEngine(screen, clock, SQ_SIZE, DIMENSION, MAX_FPS)
     chess_engine.create_game()
-    chess_engine.play(AI=False, ai_vs_ai=True)
+    chess_engine.play(AI=False, ai_vs_ai=False)
 
 if __name__ == "__main__":
     main()

@@ -155,9 +155,10 @@ class Pawn(Piece):
                             valid_moves.append(Move(position, (row + 1, col - 1), board, capturedPiece, apassant=True))
 
 class Rook(Piece):
-    def __init__(self, color, image):
+    def __init__(self, color, image, have_moved=0):
         Piece.__init__(self, color, image)
         self.piece = "R"
+        self.have_moved = have_moved
 
     # position is a tuple, board is an instance of Board, valid_moves is a list with moves and white_turn is a bool
     def get_moves(self, position, board, valid_moves, white_turn):
@@ -503,9 +504,10 @@ class Queen(Piece):
 
 
 class King(Piece):
-    def __init__(self, color, image):
+    def __init__(self, color, image, have_moved=0):
         Piece.__init__(self, color, image)
         self.piece = "K"
+        self.have_moved = have_moved
     
     # position is a tuple, board is an instance of Board, valid_moves is a list with moves, and white_turn is a bool
     def get_moves(self, position, board, valid_moves, white_turn):
@@ -584,6 +586,29 @@ class King(Piece):
                 elif self.opposite_color(row - 1, col + 1, board):
                     capturedPiece = board[row - 1][col + 1]  # Capture piece here
                     valid_moves.append(Move(position, (row - 1, col + 1), board, capturedPiece))
+        ### Add Castling
+        if self.color == "white" and not(self.have_moved):
+            if isinstance(board[row][7], Rook) and not board[row][7].have_moved:  # Rook hasn't moved
+                if isinstance(board[row][5], Empty) and isinstance(board[row][6], Empty):  # No pieces between
+                    capturedPiece = board[row][6]
+                    valid_moves.append(Move(position, (row, 6), board, capturedPiece, castle=True))
+
+            if isinstance(board[row][0], Rook) and not board[row][0].have_moved:  # Rook hasn't moved
+                if isinstance(board[row][1], Empty) and isinstance(board[row][2], Empty) and isinstance(board[row][3], Empty):  # No pieces between
+                    capturedPiece = board[row][2]
+                    valid_moves.append(Move(position, (row, 2), board, capturedPiece, castle=True))  # Castling queenside
+        if self.color == "black" and not(self.have_moved):
+            # Kingside Castling (Short Castling)
+            if isinstance(board[row][7], Rook) and not board[row][7].have_moved:  # Rook hasn't moved
+                if isinstance(board[row][5], Empty) and isinstance(board[row][6], Empty):  # No pieces between
+                    capturedPiece = board[row][6]
+                    valid_moves.append(Move(position, (row, 6), board, capturedPiece, castle=True))  # Castling kingside
+
+            # Queenside Castling (Long Castling)
+            if isinstance(board[row][0], Rook) and not board[row][0].have_moved:  # Rook hasn't moved
+                if isinstance(board[row][1], Empty) and isinstance(board, Empty) and isinstance(board[row][3], Empty):  # No pieces between
+                    capturedPiece = board[row][2]
+                    valid_moves.append(Move(position, (row, 2), board, capturedPiece, castle=True))
 
 
 class Empty(Piece):
