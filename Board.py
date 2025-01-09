@@ -27,8 +27,19 @@ class Board():
                     [Pawn("white", self.PIECE_IMAGES["wP"]), Pawn("white", self.PIECE_IMAGES["wP"]), Pawn("white", self.PIECE_IMAGES["wP"]), Pawn("white", self.PIECE_IMAGES["wP"]), Pawn("white", self.PIECE_IMAGES["wP"]), Pawn("white", self.PIECE_IMAGES["wP"]), Pawn("white", self.PIECE_IMAGES["wP"]), Pawn("white", self.PIECE_IMAGES["wP"])],
                     [Rook("white", self.PIECE_IMAGES["wR"]), Knight("white", self.PIECE_IMAGES["wN"]), Bishop("white", self.PIECE_IMAGES["wB"]), Queen("white", self.PIECE_IMAGES["wQ"]), King("white", self.PIECE_IMAGES["wK"]), Bishop("white", self.PIECE_IMAGES["wB"]), Knight("white", self.PIECE_IMAGES["wN"]), Rook("white", self.PIECE_IMAGES["wR"])],
                     ]
+        # self.board = [
+        #     [Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"])],
+        #     [Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Pawn("black", self.PIECE_IMAGES["bP"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"])],
+        #     [Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"])],
+        #     [Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"])],
+        #     [Empty("", self.PIECE_IMAGES["transparent"]), Pawn("white", self.PIECE_IMAGES["wP"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"])],
+        #     [Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"])],
+        #     [Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"])],
+        #     [Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"])]
+        # ]
 
     def draw(self,screen):
+        
         for row in range(self.DIMENSION):
             for column in range(self.DIMENSION):
                 color = self.colors[ (row + column) % 2 ]
@@ -56,28 +67,30 @@ class Board():
             self.PIECE_IMAGES[piece] = p.transform.scale(p.image.load("images/" + piece + ".png"),(self.SQ_SIZE, self.SQ_SIZE))
 
     def make_move(self, move):
-        if not(isinstance(move.pieceMoved, Empty)):
-            self.board[move.startRow][move.startCol] = Empty("", self.PIECE_IMAGES["transparent"])
-            self.board[move.endRow][move.endCol] = move.pieceMoved
-            #Check if anpassant move
-            if move.apassant:
-                if move.pieceMoved.color == "white":
-                    self.board[move.endRow + 1][move.endCol] = Empty("", self.PIECE_IMAGES["transparent"])
-                elif move.pieceMoved.color == "black":
-                    self.board[move.endRow - 1][move.endCol] = Empty("", self.PIECE_IMAGES["transparent"])
+        self.board[move.startRow][move.startCol] = Empty("", self.PIECE_IMAGES["transparent"])
+        self.board[move.endRow][move.endCol] = move.pieceMoved
 
-            self.movelog.append(move)
+        # Check if it's an en passant move
+        if move.apassant:
+            if move.pieceMoved.color == "white":
+                # Remove the captured black pawn for en passant
+                self.board[move.endRow + 1][move.endCol] = Empty("", self.PIECE_IMAGES["transparent"])
+            elif move.pieceMoved.color == "black":
+                # Remove the captured white pawn for en passant
+                self.board[move.endRow - 1][move.endCol] = Empty("", self.PIECE_IMAGES["transparent"])
 
-            #Make sure number of moves pawn have done is increased by 1
-            if isinstance(move.pieceMoved, Pawn):
-                move.pieceMoved.have_moved += 1
+        self.movelog.append(move)
 
-                if move.endRow == 0 or move.endRow == 7:
-                    ## promotion of pawn is handled here, right now it automaticlly promotes to queen
-                    self.board[move.endRow][move.endCol] = Queen(f"{move.pieceMoved.color}", self.PIECE_IMAGES[f"{move.pieceMoved.color[0]}Q"])
+        # Handle pawn promotion if needed
+        if isinstance(move.pieceMoved, Pawn):
+            move.pieceMoved.have_moved += 1
+            if move.endRow == 0 or move.endRow == 7:
+                # Automatically promote pawn to queen for simplicity
+                self.board[move.endRow][move.endCol] = Queen(f"{move.pieceMoved.color}", self.PIECE_IMAGES[f"{move.pieceMoved.color[0]}Q"])
 
-            # swap player turn
-            self.white_to_move = not self.white_to_move 
+        # Switch the player's turn
+        self.white_to_move = not self.white_to_move
+
 
 
 
@@ -94,11 +107,9 @@ class Board():
          
 
     def get_valid_moves(self, moves):
-        ## Lägg in apassant (funkar inte riktigt än)
         valid_moves = []
         for move in moves:
             make_move = True
-            
             if move.apassant:
                 last_move = self.movelog[-1]
                 if move.pieceMoved.color == "white":
@@ -128,16 +139,11 @@ class Board():
         return valid_moves
 
     def get_all_moves(self):
-        valid_moves = []
+        moves = []
         for row in range(self.DIMENSION):
             for column in range(self.DIMENSION):
-                self.board[row][column].get_moves((row, column), self.board, valid_moves, self.white_to_move)
-        return valid_moves
-
-
-    def check_if_check(self):
-        pass
-
+                self.board[row][column].get_moves((row, column), self.board, moves, self.white_to_move)
+        return moves
 
     def __copy__(self, other):
         if isinstance(other, Board):
@@ -156,17 +162,17 @@ class Board():
     def undo_move(self):
         if self.movelog:
             last_move = self.movelog.pop()
-            #make sures number of moves a pawn have done decrease by 1
             if isinstance ( last_move.pieceMoved, Pawn):
                 last_move.pieceMoved.have_moved -= 1
 
             if last_move.apassant:
                 if last_move.pieceMoved.color == "white":
                     self.board[last_move.endRow + 1][last_move.endCol] = last_move.pieceCaptured
+                    self.board[last_move.endRow][last_move.endCol] = Empty("", self.PIECE_IMAGES["transparent"])
                 elif last_move.pieceMoved.color == "black":
-                    self.board[last_move.endRow - 1][last_move.endCol] = last_move.pieceCaptured 
+                    self.board[last_move.endRow - 1][last_move.endCol] = last_move.pieceCaptured
+                    self.board[last_move.endRow ][last_move.endCol] = Empty("", self.PIECE_IMAGES["transparent"])
             else:
-                
                 self.board[last_move.endRow][last_move.endCol] = last_move.pieceCaptured
                   
             self.board[last_move.startRow][last_move.startCol] = last_move.pieceMoved
