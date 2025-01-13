@@ -3,6 +3,7 @@ from Piece import Piece
 from Board import Board
 from Move import Move
 import random
+from ai import AI
 
 class ChessEngine():
     def __init__(self, screen, clock, SQ_SIZE, DIMENSION, MAX_FPS):
@@ -16,6 +17,8 @@ class ChessEngine():
         self.sq_selected = ()
         self.moveMade = False
         self.run = True
+        self.AI = AI()
+
         
 
     def create_game(self, SQ_SIZE = 80, DIMENSION = 8 ):
@@ -125,7 +128,7 @@ class ChessEngine():
         valid_moves = self.board.get_valid_moves(moves)
 
         if valid_moves:
-            move = random.choice(valid_moves)
+            move = self.AI.choose_move(valid_moves)
             self.board.make_move(move)
             self.board.movelog.append(move)
             self.moveMade = True
@@ -134,15 +137,54 @@ class ChessEngine():
             self.moveMade = False
 
     def check_for_winner(self):
-        """Checks if the current player is out of moves or if the opponent wins."""
+        """Checks if the current player is out of moves or if the opponent wins/draws."""
+        # Check for insufficient material
+        if self.check_insufficient_material():
+            print("Draw due to insufficient material!")
+            self.run = False
+            return
+
         # Get all moves for the current player
         moves = self.board.get_all_moves()
         valid_moves = self.board.get_valid_moves(moves)
-        
+
         # If no valid moves, the opponent wins
         if not valid_moves:
             winner = "White" if not self.board.white_to_move else "Black"
             print(f"{winner} wins because the opponent has no valid moves!")
+            self.run = False
+
+
+    def check_insufficient_material(self):
+        """
+        Checks for insufficient material to determine if a draw should be declared.
+        """
+        pieces = self.board.get_all_pieces()
+        piece_count = {}
+        bishops = []
+
+        for piece, position in pieces:
+            piece_type = type(piece).__name__
+            piece_count[piece_type] = piece_count.get(piece_type, 0) + 1
+            if piece_type == "Bishop":
+                square_color = (position[0] + position[1]) % 2
+                bishops.append((piece.color, square_color))
+
+        if len(pieces) == 2:
+            return True
+
+        if len(pieces) == 3 and ("Bishop" in piece_count or "Knight" in piece_count):
+            return True
+        
+        if self.board.no_capture_or_pawn_move_count >= 50*2:
+            return True
+
+        if len(pieces) == 4 and piece_count.get("Bishop", 0) == 2:
+            bishop_colors = set(bishop[1] for bishop in bishops)
+            if len(bishop_colors) == 1:
+                return True
+
+        return False
 
 
 

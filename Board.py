@@ -17,6 +17,7 @@ class Board():
         self.highlight_moves = []
         self.PIECE_IMAGES = {}
         self.load_images()
+        self.no_capture_or_pawn_move_count = 0
         self.board = [
                     [Rook("black", self.PIECE_IMAGES["bR"]), Knight("black", self.PIECE_IMAGES["bN"]), Bishop("black", self.PIECE_IMAGES["bB"]), Queen("black", self.PIECE_IMAGES["bQ"]), King("black",self.PIECE_IMAGES["bK"]), Bishop("black", self.PIECE_IMAGES["bB"]), Knight("black", self.PIECE_IMAGES["bN"]), Rook("black", self.PIECE_IMAGES["bR"])],
                     [Pawn("black", self.PIECE_IMAGES["bP"]), Pawn("black", self.PIECE_IMAGES["bP"]), Pawn("black", self.PIECE_IMAGES["bP"]), Pawn("black", self.PIECE_IMAGES["bP"]), Pawn("black", self.PIECE_IMAGES["bP"]), Pawn("black", self.PIECE_IMAGES["bP"]), Pawn("black", self.PIECE_IMAGES["bP"]), Pawn("black", self.PIECE_IMAGES["bP"])],
@@ -27,19 +28,7 @@ class Board():
                     [Pawn("white", self.PIECE_IMAGES["wP"]), Pawn("white", self.PIECE_IMAGES["wP"]), Pawn("white", self.PIECE_IMAGES["wP"]), Pawn("white", self.PIECE_IMAGES["wP"]), Pawn("white", self.PIECE_IMAGES["wP"]), Pawn("white", self.PIECE_IMAGES["wP"]), Pawn("white", self.PIECE_IMAGES["wP"]), Pawn("white", self.PIECE_IMAGES["wP"])],
                     [Rook("white", self.PIECE_IMAGES["wR"]), Knight("white", self.PIECE_IMAGES["wN"]), Bishop("white", self.PIECE_IMAGES["wB"]), Queen("white", self.PIECE_IMAGES["wQ"]), King("white", self.PIECE_IMAGES["wK"]), Bishop("white", self.PIECE_IMAGES["wB"]), Knight("white", self.PIECE_IMAGES["wN"]), Rook("white", self.PIECE_IMAGES["wR"])],
                     ]
-        # self.board = [
-        #     [Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"])],
-        #     [Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Pawn("black", self.PIECE_IMAGES["bP"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"])],
-        #     [Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"])],
-        #     [Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"])],
-        #     [Empty("", self.PIECE_IMAGES["transparent"]), Pawn("white", self.PIECE_IMAGES["wP"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"])],
-        #     [Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"])],
-        #     [Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"])],
-        #     [Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"]), Empty("", self.PIECE_IMAGES["transparent"])]
-        # ]
-
     def draw(self,screen):
-        
         for row in range(self.DIMENSION):
             for column in range(self.DIMENSION):
                 color = self.colors[ (row + column) % 2 ]
@@ -70,41 +59,40 @@ class Board():
         self.board[move.startRow][move.startCol] = Empty("", self.PIECE_IMAGES["transparent"])
         self.board[move.endRow][move.endCol] = move.pieceMoved
         if move.castle:
-            if move.endCol == 6:  # Kingside
+            if move.endCol == 6: 
                 rook_start_col = 7
                 rook_end_col = 5
-            elif move.endCol == 2:  # Queenside
+            elif move.endCol == 2:  
                 rook_start_col = 0
                 rook_end_col = 3
+            
+        if isinstance(move.pieceMoved, Pawn) or move.pieceCaptured:
+            self.no_capture_or_pawn_move_count = 0  
+        else:
+            self.no_capture_or_pawn_move_count += 1
 
-            # Move the rook
+           
             rook = self.board[move.startRow][rook_start_col]
             self.board[move.startRow][rook_start_col] = Empty("", self.PIECE_IMAGES["transparent"])
             self.board[move.startRow][rook_end_col] = rook
             rook.have_moved += 1
 
-        # Check if it's an en passant move
+        
         if move.apassant:
             if move.pieceMoved.color == "white":
-                # Remove the captured black pawn for en passant
                 self.board[move.endRow + 1][move.endCol] = Empty("", self.PIECE_IMAGES["transparent"])
             elif move.pieceMoved.color == "black":
-                # Remove the captured white pawn for en passant
                 self.board[move.endRow - 1][move.endCol] = Empty("", self.PIECE_IMAGES["transparent"])
 
         self.movelog.append(move)
 
-        # Handle pawn promotion if needed
+       
         if isinstance(move.pieceMoved, Pawn):
             move.pieceMoved.have_moved += 1
             if move.endRow == 0 or move.endRow == 7:
-                # Automatically promote pawn to queen for simplicity
                 self.board[move.endRow][move.endCol] = Queen(f"{move.pieceMoved.color}", self.PIECE_IMAGES[f"{move.pieceMoved.color[0]}Q"])
 
-        # Switch the player's turn
         self.white_to_move = not self.white_to_move
-
-
 
 
     def highlight(self, sq_selected):
@@ -136,17 +124,14 @@ class Board():
                     else:
                         make_move = False
             
-            # Handle castling logic
             if isinstance(move.pieceMoved, King) and move.pieceMoved.color == "white":
-                # Check for Kingside Castling (White)
-                if move.endCol == 6:  # kingside castling
+                if move.endCol == 6: 
                     if not self.is_square_under_attack(move.startRow, 4) and not self.is_square_under_attack(move.startRow, 5):
                         make_move = True
                     else:
                         make_move = False
             
-                # Check for Queenside Castling (White)
-                elif move.endCol == 2:  # queenside castling
+                elif move.endCol == 2:
                     if not self.is_square_under_attack(move.startRow, 4) and not self.is_square_under_attack(move.startRow, 3):
                         make_move = True
                     else:
@@ -154,14 +139,13 @@ class Board():
 
         
             if isinstance(move.pieceMoved, King) and move.pieceMoved.color == "black" and not move.pieceMoved.have_moved:
-                if move.endCol == 6:  # kingside castling
+                if move.endCol == 6: 
                     if not self.is_square_under_attack(move.startRow, 4) and not self.is_square_under_attack(move.startRow, 5):
                         make_move = True
                     else:
                         make_move = False
             
-                # Check for Queenside Castling (Black)
-                elif move.endCol == 2:  # queenside castling
+                elif move.endCol == 2:
                     if not self.is_square_under_attack(move.startRow, 4) and not self.is_square_under_attack(move.startRow, 3):
                         make_move = True
                     else:
@@ -250,5 +234,19 @@ class Board():
                         if move.endRow == row and move.endCol == col:
                             return True
         return False
+    
+    def get_all_pieces(self):
+        """
+        Returns a list of all active pieces on the board along with their positions.
+        Each entry in the list is a tuple (piece, (row, col)).
+        """
+        all_pieces = []
+        for row in range(self.DIMENSION):
+            for col in range(self.DIMENSION):
+                piece = self.board[row][col]
+                if not isinstance(piece, Empty):  # Skip empty squares
+                    all_pieces.append((piece, (row, col)))
+        return all_pieces
+
 
 

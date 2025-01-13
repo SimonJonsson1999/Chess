@@ -19,7 +19,7 @@ class Move():
         self.pieceMoved = board[self.startRow][self.startCol]
         self.pieceCaptured = pieceCaptured
         self.moveID = self.startRow * 1000 + self.startCol * 100 + self.endRow * 10 + self.endCol
-        self.apassant = apassant # True or False
+        self.apassant = apassant
         self.castle = castle
 
     def __eq__(self,other):
