@@ -4,7 +4,7 @@ from Board import Board
 from Move import Move
 from ChessEngine import ChessEngine
 WIDTH = HEIGHT = 640
-DIMENSION = 8 #8 by 8 board
+DIMENSION = 8 
 SQ_SIZE = HEIGHT // DIMENSION
 MAX_FPS = 15
 
@@ -17,7 +17,7 @@ class ChessGame():
 
     def play(self):
         self.chess_engine.create_game()
-        self.chess_engine.play(AI=False, ai_vs_ai=True)  
+        self.chess_engine.play(AI=False, ai_vs_ai=False, online=True)  
 
 
 

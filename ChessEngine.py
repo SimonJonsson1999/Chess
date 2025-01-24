@@ -4,6 +4,7 @@ from Board import Board
 from Move import Move
 import random
 from ai import AI
+from online import ChessBoardTracker
 
 class ChessEngine():
     def __init__(self, screen, clock, SQ_SIZE, DIMENSION, MAX_FPS):
@@ -18,17 +19,18 @@ class ChessEngine():
         self.moveMade = False
         self.run = True
         self.AI = AI()
-
+        self.board_tracker = ChessBoardTracker()
+        self.update_online_board = False
+        self.possible_online_moves = None
         
 
     def create_game(self, SQ_SIZE = 80, DIMENSION = 8 ):
         self.board = Board(SQ_SIZE, DIMENSION)
 
 
-    def play(self, AI = False, ai_vs_ai=False):
+    def play(self, AI = False, ai_vs_ai=False, online=False):
         moves = []
         valid_moves = []
-        
         while self.run:
             self.handle_events(moves, valid_moves, AI)
 
@@ -41,6 +43,23 @@ class ChessEngine():
             
             elif AI and not self.board.white_to_move:
                 self.ai_move()
+
+            elif online:
+                if self.update_online_board:
+                    tmp_moves = self.board.get_all_moves()
+                    tmp_valid_moves = self.board.get_valid_moves(tmp_moves)
+                    self.possible_online_moves = tmp_valid_moves
+                    self.board_tracker.update_board(self.board.get_board())
+                    self.update_online_board = False
+                    move_string = self.board_tracker.get_move()
+                    move = self.find_move_by_str(self.possible_online_moves, move_string)
+                    self.board.make_move(move)
+                    self.board.movelog.append(move)
+                    self.moveMade = True
+                    moves = []
+                    valid_moves = []
+
+
             
             self.clock.tick(self.MAX_FPS)
             
@@ -62,10 +81,10 @@ class ChessEngine():
 
     def handle_mouse_click(self, moves, valid_moves):
         """Handles mouse click events to select and move pieces."""
-        location = p.mouse.get_pos()  #(x, y) location of mouse
+        location = p.mouse.get_pos()
         col, row = location[0] // self.SQ_SIZE, location[1] // self.SQ_SIZE
         
-        if self.sq_selected == (row, col):  # Same square clicked again
+        if self.sq_selected == (row, col):
             self.deselect_square()
         else:
             self.select_square(row, col)
@@ -81,12 +100,14 @@ class ChessEngine():
             moves = self.board.get_all_moves()
         if not valid_moves:
             valid_moves = self.board.get_valid_moves(moves)
-        
+        self.possible_online_moves = valid_moves
         for valid_move in valid_moves:
+            # print(valid_move)
             if valid_move == move:
                 self.board.make_move(valid_move)
                 self.board.movelog.append(valid_move)
                 self.moveMade = True
+                self.update_online_board = True
                 moves = []
                 valid_moves = []
                 break
@@ -185,7 +206,24 @@ class ChessEngine():
                 return True
 
         return False
+    
 
+    def find_move_by_str(self, move_list, move_str):
+        """
+        Find a move in the list that corresponds to the given move string representation.
+        
+        Args:
+            move_list (list): List of Move objects.
+            move_str (str): The move string to find.
+        
+        Returns:
+            Move: The corresponding Move object or None if not found.
+        """
+        for move in move_list:
+            if str(move) == move_str:
+                return move
+        return None
+    
 
 
 

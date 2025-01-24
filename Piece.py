@@ -29,6 +29,7 @@ class Pawn(Piece):
         Piece.__init__(self, color, image)
         self.piece = "P"
         self.have_moved = have_moved
+        self.type = 'pawn'
 
     def get_moves(self, position, board, valid_moves, white_turn):
         row = position[0]
@@ -159,6 +160,7 @@ class Rook(Piece):
         Piece.__init__(self, color, image)
         self.piece = "R"
         self.have_moved = have_moved
+        self.type = 'rook'
 
     # position is a tuple, board is an instance of Board, valid_moves is a list with moves and white_turn is a bool
     def get_moves(self, position, board, valid_moves, white_turn):
@@ -228,6 +230,7 @@ class Knight(Piece):
     def __init__(self, color, image):
         Piece.__init__(self, color, image)
         self.piece = "K"
+        self.type = 'knight'
 
     # position is a tuple, board is an instance of Board, valid_moves is a list with moves and white_turn is a bool
     def get_moves(self, position, board, valid_moves, white_turn):
@@ -314,6 +317,7 @@ class Bishop(Piece):
     def __init__(self, color, image):
         Piece.__init__(self, color, image)
         self.piece = "B"
+        self.type = 'bishop'
 
     # position is a tuple, board is an instance of Board, valid_moves is a list with moves and white_turn is a bool
     def get_moves(self, position, board, valid_moves, white_turn):
@@ -382,6 +386,7 @@ class Queen(Piece):
     def __init__(self, color, image):
         Piece.__init__(self, color, image)
         self.piece = "Q"
+        self.type = 'queen'
     
     # position is a tuple, board is an instance of Board, valid_moves is a list with moves, and white_turn is a bool
     def get_moves(self, position, board, valid_moves, white_turn):
@@ -508,6 +513,7 @@ class King(Piece):
         Piece.__init__(self, color, image)
         self.piece = "K"
         self.have_moved = have_moved
+        self.type = 'king'
     
     # position is a tuple, board is an instance of Board, valid_moves is a list with moves, and white_turn is a bool
     def get_moves(self, position, board, valid_moves, white_turn):
@@ -605,8 +611,8 @@ class King(Piece):
                     valid_moves.append(Move(position, (row, 6), board, capturedPiece, castle=True))  # Castling kingside
 
             # Queenside Castling (Long Castling)
-            if isinstance(board[row][0], Rook) and not board[row][0].have_moved:  # Rook hasn't moved
-                if isinstance(board[row][1], Empty) and isinstance(board, Empty) and isinstance(board[row][3], Empty):  # No pieces between
+            if isinstance(board[row][0], Rook) and not board[row][0].have_moved: 
+                if isinstance(board[row][1], Empty) and isinstance(board, Empty) and isinstance(board[row][3], Empty):  
                     capturedPiece = board[row][2]
                     valid_moves.append(Move(position, (row, 2), board, capturedPiece, castle=True))
 
@@ -615,6 +621,7 @@ class Empty(Piece):
     def __init__(self, color, image):
         Piece.__init__(self, color, image)
         self.piece = "E"
+        self.type = 'empty'
 
     def get_moves(self, position, board, valid_moves, white_turn):
         pass

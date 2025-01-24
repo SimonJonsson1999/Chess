@@ -247,6 +247,8 @@ class Board():
                 if not isinstance(piece, Empty):  # Skip empty squares
                     all_pieces.append((piece, (row, col)))
         return all_pieces
-
+    
+    def get_board(self):
+        return self.board
 
 

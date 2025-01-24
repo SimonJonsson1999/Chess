@@ -1,8 +1,5 @@
 import pygame as p
 class Move():
-    #class that makes the moves
-    # maps keys to values
-    # key : values
     ranksToRows = {"1" : 7, "2" : 6, "3" : 5, "4" : 4,
                   "5" : 3, "6" : 2, "7" : 1, "8" : 0,}
 
